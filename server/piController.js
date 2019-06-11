@@ -1,25 +1,40 @@
 const MockGpio = require('./MockGpio');
 
+const OPEN = 1;
+const CLOSED = 0;
+const ON = 1;
+const OFF = 0;
+
 const piController = {
+  // objIO exported to main server
+
   objIO: {
     red: null,
     yellow: null,
     green: null,
     doorStatus: null,
-    doorTime: 0,
+    doorTime: 0, // time door has been in current state
+    doorState: OPEN, // current door state
     //constants for the door values
-    OPEN: 1,
-    CLOSED: 0,
+    OPEN: OPEN,
+    CLOSED: CLOSED,
 
     //constants for LED values
     ON: 1,
     OFF: 0,
 
     //time constants
-    STATE_CHANGE_TIMEOUT: 30000,   //time in new door state before changing
+    STATE_CHANGE_TIMEOUT: 5000, //time in new door state before changing
   },
 };
+
 piController.setupIO = setupIO;
+piController.doorCheck = doorCheck;
+piController.ioStatus = ioStatus;
+piController.blinkLED = blinkLED;
+piController.turnOffLED = turnOffLED;
+piController.turnOffLED = turnOffLED;
+piController.turnOnLED = turnOnLED;
 //obj that will have the current status of all IO bits
 
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
@@ -42,7 +57,7 @@ if (CURRENT_ENV === 'production') {
     piController.objIO.yellow = new MockGpio();
     piController.objIO.green = new MockGpio();
   }
-  piController.objIO.doorTime = Date.now(); //initialize door time
+  piController.objIO.doorTime = 0; //initialize to 0
   return piController.objIO;
 }
 
@@ -50,13 +65,116 @@ if (CURRENT_ENV === 'production') {
 // room consitered in use when it has been in the new state for > 30 seconds
 // expected to be called every 1000ms in server.js
 function doorCheck() {
-  //keep track of the current state
-  const currentState = piController.objIO.OPEN;
+  const currentState = piController.objIO.doorStatus.readSync();
+  let doorState = piController.objIO.doorState;
+  let doorTime = piController.objIO.doorTime;
 
+  if (currentState !== doorState && doorTime === 0) {
+    // start timer
+    // console.log('Start Door Timer');
+    piController.objIO.doorTime = Date.now();
+  }
 
-    // if current is different than 
+  if (currentState !== doorState && doorTime > 0) {
+    const diffTime = Date.now() - doorTime;
+    console.log(`Door Timer: ${diffTime}`);
+    if (diffTime > piController.objIO.STATE_CHANGE_TIMEOUT) {
+      //change door state
+      //   console.log('Change Door State!');
+      doorState = doorState ^ 1;
+      piController.objIO.doorTime = 0;
+    }
+  } else if (currentState === doorState && doorTime > 0) {
+    // door closed before timeout - remove timer
+    piController.objIO.doorTime = 0;
+  }
 
-   
+  piController.objIO.doorState = doorState;
+  return doorState;
+}
+
+function ioStatus() {
+  let door = piController.objIO.doorStatus.readSync();
+  let red = piController.objIO.red.readSync();
+  let yellow = piController.objIO.yellow.readSync();
+  let green = piController.objIO.green.readSync();
+
+  door = door === OPEN ? 'open' : 'closed';
+  red = red === ON ? 'ON' : '  ';
+  yellow = yellow === ON ? 'ON' : '  ';
+  green = green === ON ? 'ON' : '  ';
+
+  return `Door: ${door} -- red:${red} -- yellow:${yellow} -- green:${green}`;
+}
+
+function turnOnLED(color, timeout = 0) {
+  let led;
+  switch (color) {
+    case 'red':
+      led = piController.objIO.red;
+      break;
+    case 'yellow':
+      led = piController.objIO.yellow;
+      break;
+    case 'green':
+      led = piController.objIO.green;
+      break;
+    default:
+      console.log('INVALID COLOR FOUND');
+      break;
+  }
+
+  led.writeSync(ON);
+  if (timeout !== 0) {
+    setTimeout(turnOffLED(color));
+  }
+}
+
+function turnOffLED(color, timeout = 0) {
+  let led;
+  switch (color) {
+    case 'red':
+      led = piController.objIO.red;
+      break;
+    case 'yellow':
+      led = piController.objIO.yellow;
+      break;
+    case 'green':
+      led = piController.objIO.green;
+      break;
+    default:
+      console.log('INVALID COLOR FOUND');
+      break;
+  }
+
+  led.writeSync(OFF);
+  if (timeout !== 0) {
+    setTimeout(turnOnLED(color));
+  }
+}
+
+function blinkLED(color, time = 5000) {
+    console.log(`Blink ${color} LED for ${time}`);
+  let led;
+  switch (color) {
+    case 'red':
+      led = piController.objIO.red;
+      break;
+    case 'yellow':
+      led = piController.objIO.yellow;
+      break;
+    case 'green':
+      led = piController.objIO.green;
+      break;
+    default:
+      console.log('INVALID COLOR FOUND');
+      break;
+  }
+  let toggled = led.readSync() ^ 1;
+  led.writeSync(toggled);
+  if (time > 500) {
+    setTimeout(blinkLED, 1200, color, time - 1200);
+  }
 }
 
 module.exports = piController;

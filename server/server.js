@@ -2,26 +2,21 @@ const express = require('express');
 var app = express();
 const path = require('path');
 
-const pi = require('./piController')
+const pi = require('./piController');
 
 app.use(express.static(path.join(__dirname, '../build')));
-
-
 
 const roomInUse = false;
 const queue = [];
 
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
-
 const objIO = pi.setupIO();
+// ONLY USE THE GET ROUTES WITH objIO mentioned in them
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  const door = objIO.doorStatus.readSync();
-  const red = objIO.red.readSync();
-  const yellow = objIO.yellow.readSync();
-  const green = objIO.green.readSync();
-  console.log(`Door: ${door} -- red:${red} -- yellow:${yellow} -- green:${green}`);
+  console.log(pi.ioStatus());
+  console.log(`Door Check:`,pi.doorCheck())
 }, 1000);
 
 app.get('/api/', (req, res) => {
@@ -72,6 +67,7 @@ app.get('/led/:color', (req, res) => {
     return;
   }
 
+  
   res.json(led.readSync());
 });
 
@@ -79,7 +75,7 @@ app.get('/led/:color', (req, res) => {
 app.post('/led/:color', (req, res) => {
   console.log(`/led/:color`);
   const color = req.params.color;
-
+  
   let led;
   if (color === 'red') {
     led = objIO.red;
@@ -92,10 +88,35 @@ app.post('/led/:color', (req, res) => {
     res.status(402).json(`Invalid color ${color}.  Valid colors: red,yellow,green`);
     return;
   }
+  
+  pi.blinkLED(color);
 
   const newStatus = (led.readSync() + 1) % 2;
   led.writeSync(newStatus);
   res.json(newStatus);
+});
+
+// change color DEV only
+app.post('/led/blink/:color', (req, res) => {
+  console.log(`/led/blink/:color`);
+  const color = req.params.color;
+  
+  let led;
+  if (color === 'red') {
+    led = objIO.red;
+  } else if (color === 'yellow') {
+    led = objIO.yellow;
+  } else if (color === 'green') {
+    led = objIO.green;
+  } else {
+    console.log('Invalid color');
+    res.status(402).json(`Invalid color ${color}.  Valid colors: red,yellow,green`);
+    return;
+  }
+  
+  pi.blinkLED(color);
+
+  res.json("done");
 });
 
 //only need this to host the static files if we're running on the pi
