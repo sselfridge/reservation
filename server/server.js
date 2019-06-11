@@ -21,12 +21,10 @@ const objIO = {
   doorStatus: null,
 };
 
-const VALID_COLORS = new Set('red', 'yellow', 'green');
-
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
 
 // for Production it will look at the actuall Pi
-// rest will use mockups driving by the ui
+// rest will use mockups driven by the ui
 // prettier-ignore
 if (CURRENT_ENV === 'production') {
   var onoff = require('onoff');
@@ -58,6 +56,11 @@ app.get('/api/', (req, res) => {
   res.json('Allo!!!');
 });
 
+app.get('/door', (req, res) => {
+  console.log(`/door`);
+  res.json(objIO.doorStatus.readSync());
+});
+
 app.post('/door/:status', (req, res) => {
   console.log(`/door/:status`);
   const status = req.params.status;
@@ -78,8 +81,6 @@ app.get('/led/:color', (req, res) => {
   console.log(`/led/:color`);
   const color = req.params.color;
   console.log(`Color:${color}`);
-  if (!VALID_COLORS.has(color)) {
-  }
 
   let led;
   if (color === 'red') {
@@ -90,7 +91,7 @@ app.get('/led/:color', (req, res) => {
     led = objIO.green;
   } else {
     console.log('Invalid color');
-    res.status(402).json(`Invalid color ${color}.  Valid color: ${VALID_COLORS}`);
+    res.status(402).json(`Invalid color ${color}.  Valid colors: red,yellow,green`);
     return;
   }
 
@@ -110,7 +111,7 @@ app.post('/led/:color', (req, res) => {
     led = objIO.green;
   } else {
     console.log('Invalid color');
-    res.status(402).json(`Invalid color ${color}.  Valid color: ${VALID_COLORS}`);
+    res.status(402).json(`Invalid color ${color}.  Valid colors: red,yellow,green`);
     return;
   }
 
@@ -128,6 +129,11 @@ if (CURRENT_ENV === 'production') {
     res.sendFile(path.join(__dirname + '/../build/index.html'));
   });
 }
+
+// catch all 404 function
+app.use(function(req, res) {
+  res.status(404).json("Something broke! Check url and try again?")
+});
 
 const port = CURRENT_ENV === 'production' ? 5000 : 3001;
 
