@@ -1,3 +1,24 @@
+# Actual README
+
+## Available scripts:
+
+### `npm start`
+Starts react server, no back end 
+
+### `npm run dev` 
+start react server on 3000 and nodemon backend server on port 3001.
+
+### `npm run prod`
+
+Will only run on pi that has the expected dir for hardware interaction. 
+
+### `npm run server`
+
+runs server only with nodemon
+
+
+# Default README from create react app
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
