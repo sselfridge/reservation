@@ -76,7 +76,7 @@ app.post('/door/close', (req, res) => {
   res.json('closed');
 });
 
-const port = CURRENT_ENV === 'production' ? 80 : 3001;
+const port = CURRENT_ENV === 'production' ? 5000 : 3001;
 
 app.listen(port);
 console.log(`Listening on ${port}`);
