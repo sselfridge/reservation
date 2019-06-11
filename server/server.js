@@ -1,18 +1,9 @@
 const express = require('express');
 var app = express();
 const path = require('path');
+const MockGpio = require('./MockGpio');
 
 app.use(express.static(path.join(__dirname, '../build')));
-
-const mockGpio = {
-  value: 1,
-  readSync() {
-    return this.value;
-  },
-  writeSync(val) {
-    this.value = val;
-  },
-};
 
 //constants for the door values
 const OPEN = 1;
@@ -24,11 +15,13 @@ const OFF = 0;
 
 //obj that will have the current status of all IO bits
 const objIO = {
-  red: OFF,
-  yellow: OFF,
-  green: OFF,
+  red: null,
+  yellow: null,
+  green: null,
   doorStatus: null,
 };
+
+const VALID_COLORS = new Set('red', 'yellow', 'green');
 
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
 
@@ -43,23 +36,20 @@ if (CURRENT_ENV === 'production') {
   objIO.yellow =      new Gpio(27, 'out');
   objIO.green =       new Gpio(22, 'out');
 } else {
-  objIO.doorStatus = mockGpio;
+  objIO.doorStatus = new MockGpio();
+  objIO.red = new MockGpio();
+  objIO.yellow = new MockGpio();
+  objIO.green = new MockGpio();
 }
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  var value = objIO.doorStatus.readSync();
-  console.log('Door Value is:', value);
-  console.log(`ENV: ${CURRENT_ENV}`);
-  console.log(path.join(__dirname + '/../build/index.html'));
+  const door = objIO.doorStatus.readSync();
+  const red = objIO.red.readSync();
+  const yellow = objIO.yellow.readSync();
+  const green = objIO.green.readSync();
+  console.log(`Door: ${door} -- red:${red} -- yellow:${yellow} -- green:${green}`);
 }, 1000);
-
-app.get('/', function(req, res) {
-  if (req.session) {
-    console.log(req.session);
-  }
-  res.sendFile(path.join(__dirname + '/../build/index.html'));
-});
 
 app.get('/api/', (req, res) => {
   console.log('/api');
@@ -68,17 +58,76 @@ app.get('/api/', (req, res) => {
   res.json('Allo!!!');
 });
 
-app.post('/door/open', (req, res) => {
-  console.log('/door/open');
-  objIO.doorStatus.writeSync(OPEN);
-  res.json('open');
+app.post('/door/:status', (req, res) => {
+  console.log(`/door/:status`);
+  const status = req.params.status;
+  let newValue;
+  if (status === 'open') {
+    newValue = OPEN;
+  } else if (status === 'close') {
+    newValue = CLOSED;
+  } else {
+    console.error(`Invalid door command. open / close is valid. Found: ${status}`);
+    res.status(400).send();
+  }
+  objIO.doorStatus.writeSync(newValue);
+  res.json('done');
 });
 
-app.post('/door/close', (req, res) => {
-  console.log('/door/close');
-  objIO.doorStatus.writeSync(CLOSED);
-  res.json('closed');
+app.get('/led/:color', (req, res) => {
+  console.log(`/led/:color`);
+  const color = req.params.color;
+  console.log(`Color:${color}`);
+  if (!VALID_COLORS.has(color)) {
+  }
+
+  let led;
+  if (color === 'red') {
+    led = objIO.red;
+  } else if (color === 'yellow') {
+    led = objIO.yellow;
+  } else if (color === 'green') {
+    led = objIO.green;
+  } else {
+    console.log('Invalid color');
+    res.status(402).json(`Invalid color ${color}.  Valid color: ${VALID_COLORS}`);
+    return;
+  }
+
+  res.json(led.readSync());
 });
+
+app.post('/led/:color', (req, res) => {
+  console.log(`/led/:color`);
+  const color = req.params.color;
+
+  let led;
+  if (color === 'red') {
+    led = objIO.red;
+  } else if (color === 'yellow') {
+    led = objIO.yellow;
+  } else if (color === 'green') {
+    led = objIO.green;
+  } else {
+    console.log('Invalid color');
+    res.status(402).json(`Invalid color ${color}.  Valid color: ${VALID_COLORS}`);
+    return;
+  }
+
+  const newStatus = (led.readSync() + 1) % 2;
+  led.writeSync(newStatus);
+  res.json(newStatus);
+});
+
+//only need this to host the static files if we're running on the pi
+if (CURRENT_ENV === 'production') {
+  app.get('/', function(req, res) {
+    if (req.session) {
+      console.log(req.session);
+    }
+    res.sendFile(path.join(__dirname + '/../build/index.html'));
+  });
+}
 
 const port = CURRENT_ENV === 'production' ? 5000 : 3001;
 
