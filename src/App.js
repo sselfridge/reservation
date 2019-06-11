@@ -1,32 +1,30 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import HeaderContainer from "./Containers/HeaderContainer";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import SignupContainer from "./Containers/SignupContainer";
+import QueueContainer from "./Containers/QueueContainer";
 
-function App() {
+const App = () => {
 
   //test a request to the server
-  fetch(`/api/`, {
-    accept: "application/json"
-  })
-    .then(checkStatus => { })
-    .then(parseJSON => { console.log(`Json: ${parseJSON}`);});
+  // fetch(`/api/`, {
+  //   accept: "application/json"
+  // })
+  //   .then(checkStatus => { })
+  //   .then(parseJSON => { console.log(`Json: ${parseJSON}`);});
+
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <HeaderContainer />
+        <div className="content">
+          <Route path="/" exact component={SignupContainer} />  
+          <Route path="/queue" exact component={QueueContainer} />
+        </div>
+      </Router>
     </div>
   );
 }
