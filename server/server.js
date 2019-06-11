@@ -1,44 +1,19 @@
 const express = require('express');
 var app = express();
 const path = require('path');
-const MockGpio = require('./MockGpio');
+
+const pi = require('./piController')
 
 app.use(express.static(path.join(__dirname, '../build')));
 
-//constants for the door values
-const OPEN = 1;
-const CLOSED = 0;
 
-//constants for LED values
-const ON = 1;
-const OFF = 0;
 
-//obj that will have the current status of all IO bits
-const objIO = {
-  red: null,
-  yellow: null,
-  green: null,
-  doorStatus: null,
-};
+const roomInUse = false;
+const queue = [];
 
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
 
-// for Production it will look at the actuall Pi
-// rest will use mockups driven by the ui
-// prettier-ignore
-if (CURRENT_ENV === 'production') {
-  var onoff = require('onoff');
-  const Gpio = onoff.Gpio;
-  objIO.doorStatus =  new Gpio(4, 'in');
-  objIO.red =         new Gpio(17, 'out');
-  objIO.yellow =      new Gpio(27, 'out');
-  objIO.green =       new Gpio(22, 'out');
-} else {
-  objIO.doorStatus = new MockGpio();
-  objIO.red = new MockGpio();
-  objIO.yellow = new MockGpio();
-  objIO.green = new MockGpio();
-}
+const objIO = pi.setupIO();
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
@@ -68,9 +43,9 @@ app.post('/door/:status', (req, res) => {
   const status = req.params.status;
   let newValue;
   if (status === 'open') {
-    newValue = OPEN;
+    newValue = objIO.OPEN;
   } else if (status === 'close') {
-    newValue = CLOSED;
+    newValue = objIO.CLOSED;
   } else {
     console.error(`Invalid door command. open / close is valid. Found: ${status}`);
     res.status(400).send();
@@ -135,7 +110,12 @@ if (CURRENT_ENV === 'production') {
 
 // catch all 404 function
 app.use(function(req, res) {
-  res.status(404).json("Something broke! Check url and try again?")
+  res.status(404).json('Something broke! Check url and try again?');
+});
+
+//other catch all, might be better error reporting
+app.use(({ code, error }, req, res, next) => {
+  res.status(code).json({ error });
 });
 
 const port = CURRENT_ENV === 'production' ? 5000 : 3001;
