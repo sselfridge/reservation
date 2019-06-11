@@ -7,13 +7,14 @@
     <auto-save>true</auto-save>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="277" />
-    <option name="y" value="312" />
-    <option name="width" value="1913" />
-    <option name="height" value="1126" />
+    <option name="x" value="637" />
+    <option name="y" value="23" />
+    <option name="width" value="1923" />
+    <option name="height" value="1417" />
   </component>
   <component name="PropertiesComponent">
     <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.jscs" value="project" />
