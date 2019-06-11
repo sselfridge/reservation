@@ -89,9 +89,7 @@ app.post('/led/:color', (req, res) => {
     return;
   }
   
-  pi.blinkLED(color);
-
-  const newStatus = (led.readSync() + 1) % 2;
+  const newStatus = (led.readSync() ^ 1) ;
   led.writeSync(newStatus);
   res.json(newStatus);
 });
