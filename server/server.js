@@ -56,11 +56,13 @@ app.get('/api/', (req, res) => {
   res.json('Allo!!!');
 });
 
+// get current door status
 app.get('/door', (req, res) => {
   console.log(`/door`);
   res.json(objIO.doorStatus.readSync());
 });
 
+// change door status DEV only
 app.post('/door/:status', (req, res) => {
   console.log(`/door/:status`);
   const status = req.params.status;
@@ -98,6 +100,7 @@ app.get('/led/:color', (req, res) => {
   res.json(led.readSync());
 });
 
+// change color DEV only
 app.post('/led/:color', (req, res) => {
   console.log(`/led/:color`);
   const color = req.params.color;
