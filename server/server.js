@@ -34,10 +34,14 @@ const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev'
 
 // for Production it will look at the actuall Pi
 // rest will use mockups driving by the ui
+// prettier-ignore
 if (CURRENT_ENV === 'production') {
   var onoff = require('onoff');
   const Gpio = onoff.Gpio;
-  objIO.doorStatus = new Gpio(4, 'in');
+  objIO.doorStatus =  new Gpio(4, 'in');
+  objIO.red =         new Gpio(17, 'out');
+  objIO.yellow =      new Gpio(27, 'out');
+  objIO.green =       new Gpio(22, 'out');
 } else {
   objIO.doorStatus = mockGpio;
 }
