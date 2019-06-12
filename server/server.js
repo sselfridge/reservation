@@ -61,7 +61,7 @@ const turnOffTheLights = setInterval(() => {
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  console.log(pi.ioStatus());
+  if(CURRENT_ENV !== 'production') console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.CLOSED) {
