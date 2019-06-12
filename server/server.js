@@ -16,7 +16,13 @@ const objIO = pi.setupIO();
 //check interval for changing door / LED values
 const interval = setInterval(() => {
   console.log(pi.ioStatus());
-  console.log(`Door Check:`, pi.doorCheck());
+  // console.log(`Door Check:`, pi.doorCheck());
+  const doorStatus = pi.doorCheck();
+  if (doorStatus === objIO.OPEN) {
+    pi.turnOffLED('green');
+  } else {
+    pi.turnOnLED('green');
+  }
 }, 1000);
 
 app.get('/api/', (req, res) => {
@@ -93,11 +99,12 @@ app.post('/led/:color', (req, res) => {
   res.json(newStatus);
 });
 
-// change color DEV only
+// blink color DEV only
+// turns off after
 app.post('/led/blink/:color/:time', (req, res) => {
   console.log(`/led/blink/:color/:time`);
   const color = req.params.color;
-  const time = parseInt(req.params.time)
+  const time = parseInt(req.params.time);
   let led;
   if (color === 'red') {
     led = objIO.red;

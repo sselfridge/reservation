@@ -33,7 +33,6 @@ piController.doorCheck = doorCheck;
 piController.ioStatus = ioStatus;
 piController.blinkLED = blinkLED;
 piController.turnOffLED = turnOffLED;
-piController.turnOffLED = turnOffLED;
 piController.turnOnLED = turnOnLED;
 //obj that will have the current status of all IO bits
 
@@ -69,6 +68,12 @@ function doorCheck() {
   let doorState = piController.objIO.doorState;
   let doorTime = piController.objIO.doorTime;
 
+    if(currentState === OPEN){
+        turnOffLED('red');
+    } else {
+        turnOnLED('red')
+    }
+
   if (currentState !== doorState && doorTime === 0) {
     // start timer
     // console.log('Start Door Timer');
@@ -77,7 +82,7 @@ function doorCheck() {
 
   if (currentState !== doorState && doorTime > 0) {
     const diffTime = Date.now() - doorTime;
-    console.log(`Door Timer: ${diffTime}`);
+    // console.log(`Door Timer: ${diffTime}`);
     if (diffTime > piController.objIO.STATE_CHANGE_TIMEOUT) {
       //change door state
       //   console.log('Change Door State!');
@@ -126,7 +131,7 @@ function turnOnLED(color, timeout = 0) {
 
   led.writeSync(ON);
   if (timeout !== 0) {
-    setTimeout(turnOffLED(color));
+    setTimeout(turnOffLED,timeout,color);
   }
 }
 
@@ -149,7 +154,7 @@ function turnOffLED(color, timeout = 0) {
 
   led.writeSync(OFF);
   if (timeout !== 0) {
-    setTimeout(turnOnLED(color));
+    setTimeout(turnOnLED,timeout,color);
   }
 }
 
