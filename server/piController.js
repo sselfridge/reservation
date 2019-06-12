@@ -69,9 +69,9 @@ function doorCheck() {
   let doorTime = piController.objIO.doorTime;
 
     if(currentState === OPEN){
-        turnOffLED('red');
+        turnOffLED('yellow');
     } else {
-        turnOnLED('red')
+        turnOnLED('yellow')
     }
 
   if (currentState !== doorState && doorTime === 0) {
