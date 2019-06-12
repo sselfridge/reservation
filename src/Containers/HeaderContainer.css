@@ -1,11 +1,12 @@
-.white {
-  background-color: white;
+.gray {
+  background-color: gray;
 }
 
 .fluid-inner {
   max-width: 992px;
   margin: 0 auto;
-  padding: 0;
+  padding: 0 10px;
+  color: white;
 }
 
 .inner-flex-mobile {
@@ -28,7 +29,7 @@ h1.inline {
 .inner-flex-desktop {
   width: 100%;
   margin: 0 auto;
-  padding: 0;
+  padding: 0 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
