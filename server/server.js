@@ -2,13 +2,18 @@ const express = require('express');
 var app = express();
 const path = require('path');
 
+const Q = require('./routes/queue')
+const events = require('./routes/events')
+
 const pi = require('./piController');
 const eventController = require('./eventController');
+
+app.use('/queue',Q)
+app.use('/events',events)
 
 app.use(express.static(path.join(__dirname, '../build')));
 
 let roomInUse = false;
-const queue = [];
 const eventObj = {
   start: null,
   end: null,
@@ -83,6 +88,7 @@ app.post('/door/:status', (req, res) => {
 });
 
 app.get('/led/:color', (req, res) => {
+
   console.log(`/led/:color`);
   const color = req.params.color;
   console.log(`Color:${color}`);
@@ -157,6 +163,9 @@ app.post('/led/blink/:color/:time', (req, res) => {
 
   res.json('done');
 });
+
+
+
 
 //only need this to host the static files if we're running on the pi
 if (CURRENT_ENV === 'production') {
