@@ -3,15 +3,22 @@ var app = express();
 const path = require('path');
 
 const pi = require('./piController');
+const eventController = require('./eventController');
 
 app.use(express.static(path.join(__dirname, '../build')));
 
 const roomInUse = false;
 const queue = [];
 
+
+
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
 const objIO = pi.setupIO();
 // ONLY USE THE GET ROUTES WITH objIO mentioned in them
+// NOT THE POST ROUTES
+
+// eventController.createEvent(Date.now(), Date.now() + 45000);
+
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
@@ -23,12 +30,13 @@ const interval = setInterval(() => {
   } else {
     pi.turnOnLED('green');
   }
+
 }, 1000);
 
 app.get('/api/', (req, res) => {
   console.log('/api');
   const value = objIO.doorStatus.readSync();
-  objIO.doorStatus.writeSync((value + 1) % 2);
+  objIO.doorStatus.writeSync(value ^ 1);
   res.json('Allo!!!');
 });
 
@@ -73,7 +81,9 @@ app.get('/led/:color', (req, res) => {
     return;
   }
 
-  res.json(led.readSync());
+  const newStatus = led.readSync() ^ 1;
+  led.writeSync(newStatus);
+  res.json(newStatus);
 });
 
 // change color DEV only
