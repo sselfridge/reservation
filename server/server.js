@@ -1,6 +1,35 @@
 const express = require('express');
-var app = express();
+const mongoose = require('mongoose');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+const helmet = require('helmet');
+const keys = require('../config/keys.js');
+const mongooseStart = require('./bin/mongoose');
+const passportSetup = require('./services/passport');
 const path = require('path');
+
+
+mongooseStart();
+
+const app = express();
+// app.use(helmet());
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    keys: [keys.session.cookieKey],
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/auth', authRoutes);
+
+// app.use('/profile', profileRoutes);
 
 const Q = require('./routes/queue')
 const events = require('./routes/events')
@@ -163,8 +192,6 @@ app.post('/led/blink/:color/:time', (req, res) => {
 
   res.json('done');
 });
-
-
 
 
 //only need this to host the static files if we're running on the pi

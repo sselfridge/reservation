@@ -1,16 +1,16 @@
 const Event = require('./models/event');
-const mongoose = require('mongoose');
-const DB = require('./DB_CONFIG');
+// const mongoose = require('mongoose');
+// const DB = require('./DB_CONFIG');
 
-const mongoURI = DB.mongoURI;
-mongoose.connect(mongoURI, { useNewUrlParser: true }, err => {
-  if (err) {
-    console.log(`Database Error`);
-    console.log(err);
-  } else {
-    console.log('DBD Connected');
-  }
-});
+// const mongoURI = DB.mongoURI;
+// mongoose.connect(mongoURI, { useNewUrlParser: true }, err => {
+//   if (err) {
+//     console.log(`Database Error`);
+//     console.log(err);
+//   } else {
+//     console.log('DBD Connected');
+//   }
+// });
 
 const eventController = {};
 
