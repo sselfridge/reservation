@@ -7,7 +7,7 @@ const eventController = require('./eventController');
 
 app.use(express.static(path.join(__dirname, '../build')));
 
-const roomInUse = false;
+let roomInUse = false;
 const queue = [];
 const eventObj = {
   start: null,
@@ -30,6 +30,7 @@ const interval = setInterval(() => {
     if (roomInUse === false) {
       roomInUse = true;
       eventObj.start = Date.now();
+      console.log("Event Started");
     }
   } else {
     pi.turnOffLED('green');
@@ -37,7 +38,7 @@ const interval = setInterval(() => {
     if (roomInUse === true) {
       roomInUse = false;
       eventObj.end = Date.now();
-
+      console.log("Event End");
       if (eventObj.start) eventController.createEvent(eventObj);
 
       eventObj.start = null;

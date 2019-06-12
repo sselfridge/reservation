@@ -18,9 +18,10 @@ const eventController = {};
 eventController.createEvent = function(eventObj) {
   const start = eventObj.start;
   const end = eventObj.end;
-  const duration = start - end;
+  const duration = end - start;
   const newEvent = new Event({ start, end, duration });
   newEvent.save();
+  console.log(`Event Created`);
 };
 
 module.exports = eventController;
