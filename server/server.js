@@ -1,5 +1,33 @@
-var express = require("express");
-var app = express();
+const express = require('express');
+const mongoose = require('mongoose');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+const helmet = require('helmet');
+const keys = require('../config/keys.js');
+const mongooseStart = require('./bin/mongoose');
+const passportSetup = require('./services/passport');
+
+mongooseStart();
+
+const app = express();
+// app.use(helmet());
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    keys: [keys.session.cookieKey],
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/auth', authRoutes);
+
+// app.use('/profile', profileRoutes);
 
 const mockGpio = {
   value: 1,
@@ -37,8 +65,9 @@ if (process.env === "production") {
   objIO.doorStatus = mockGpio;
 }
 
+//TODO: uncomment out code for RPi - JP
 //check interval for changing door / LED values
-const interval = setInterval(() => {
+/*const interval = setInterval(() => {
   var value = objIO.doorStatus.readSync();
   console.log("Door Value is:", value);
 }, 1000);
@@ -60,7 +89,7 @@ app.post("/door/close",(req,res)=> {
     console.log("/door/close");
     objIO.doorStatus.writeSync(CLOSED)
     res.json("closed")
-})
+})*/
 
 app.listen(3001);
 console.log(`Listening on 3001`);
