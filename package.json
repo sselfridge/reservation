@@ -6,10 +6,16 @@
     "@fortawesome/fontawesome-free": "^5.9.0",
     "@material-ui/core": "^4.1.0",
     "@material-ui/icons": "^4.1.0",
+    "body-parser": "^1.19.0",
+    "cookie-session": "^1.3.3",
     "express": "^4.17.1",
+    "helmet": "^3.18.0",
+    "mongoose": "^5.5.14",
     "nodemon": "^1.19.1",
     "normalize.css": "^8.0.1",
     "onoff": "^4.1.1",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^2.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
@@ -19,9 +25,10 @@
     "start": "react-scripts start",
     "server": "nodemon server/server.js",
     "build": "react-scripts build",
-    "prepi": "node server/server.js &",
-    "pi": "react-scripts start",
-    "postpi": "killall node",
+    "predev": "nodemon server/server.js &",
+    "dev": "NODE_ENV=dev react-scripts start",
+    "postdev": "killall node",
+    "prod": "NODE_ENV=production node server/server.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -42,6 +49,7 @@
   },
   "proxy": "http://localhost:3001",
   "devDependencies": {
-    "@storybook/react": "^5.1.3"
+    "@storybook/react": "^5.1.3",
+    "nodemon": "^1.19.1"
   }
 }
