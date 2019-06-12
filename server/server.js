@@ -19,26 +19,31 @@ const objIO = pi.setupIO();
 // ONLY USE THE GET ROUTES WITH objIO mentioned in them
 // NOT THE POST ROUTES
 
+// turn off all the lights every 5min
+const turnOffTheLights = setInterval(() => {
+  pi.turnOffLED('green');
+  pi.turnOffLED('yellow');
+  pi.turnOffLED('red');
+}, 300000);
+
 //check interval for changing door / LED values
 const interval = setInterval(() => {
   // console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.CLOSED) {
-    pi.turnOnLED('green');
-
     if (roomInUse === false) {
+      pi.turnOnLED('green', 1000);
       roomInUse = true;
       eventObj.start = Date.now();
-      console.log("Event Started");
+      console.log('Event Started');
     }
   } else {
-    pi.turnOffLED('green');
-
     if (roomInUse === true) {
+      pi.turnOnLED('green', 1000);
       roomInUse = false;
       eventObj.end = Date.now();
-      console.log("Event End");
+      console.log('Event End');
       if (eventObj.start) eventController.createEvent(eventObj);
 
       eventObj.start = null;
