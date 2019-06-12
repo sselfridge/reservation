@@ -97,7 +97,7 @@ app.post('/led/:color', (req, res) => {
 app.post('/led/blink/:color/:time', (req, res) => {
   console.log(`/led/blink/:color/:time`);
   const color = req.params.color;
-  const time = req.params.time;
+  const time = parseInt(req.params.time)
   let led;
   if (color === 'red') {
     led = objIO.red;
