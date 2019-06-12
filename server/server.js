@@ -15,7 +15,7 @@ const objIO = pi.setupIO();
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  console.log(pi.ioStatus());
+  // console.log(pi.ioStatus());
   // console.log(`Door Check:`, pi.doorCheck());
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.OPEN) {
