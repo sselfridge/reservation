@@ -3,7 +3,7 @@ var app = express();
 const path = require('path');
 
 const pi = require('./piController');
-const eventController = require('./eventController');
+// const eventController = require('./eventController');
 
 app.use(express.static(path.join(__dirname, '../build')));
 
