@@ -16,7 +16,7 @@ const objIO = pi.setupIO();
 //check interval for changing door / LED values
 const interval = setInterval(() => {
   console.log(pi.ioStatus());
-  console.log(`Door Check:`,pi.doorCheck())
+  console.log(`Door Check:`, pi.doorCheck());
 }, 1000);
 
 app.get('/api/', (req, res) => {
@@ -67,7 +67,6 @@ app.get('/led/:color', (req, res) => {
     return;
   }
 
-  
   res.json(led.readSync());
 });
 
@@ -75,7 +74,7 @@ app.get('/led/:color', (req, res) => {
 app.post('/led/:color', (req, res) => {
   console.log(`/led/:color`);
   const color = req.params.color;
-  
+
   let led;
   if (color === 'red') {
     led = objIO.red;
@@ -88,17 +87,17 @@ app.post('/led/:color', (req, res) => {
     res.status(402).json(`Invalid color ${color}.  Valid colors: red,yellow,green`);
     return;
   }
-  
-  const newStatus = (led.readSync() ^ 1) ;
+
+  const newStatus = led.readSync() ^ 1;
   led.writeSync(newStatus);
   res.json(newStatus);
 });
 
 // change color DEV only
-app.post('/led/blink/:color', (req, res) => {
-  console.log(`/led/blink/:color`);
+app.post('/led/blink/:color/:time', (req, res) => {
+  console.log(`/led/blink/:color/:time`);
   const color = req.params.color;
-  
+  const time = req.params.time;
   let led;
   if (color === 'red') {
     led = objIO.red;
@@ -111,10 +110,16 @@ app.post('/led/blink/:color', (req, res) => {
     res.status(402).json(`Invalid color ${color}.  Valid colors: red,yellow,green`);
     return;
   }
-  
-  pi.blinkLED(color);
+  console.log(`Time: ${time}`);
+  if (Number.isInteger(time) && time > 0) {
+    pi.blinkLED(color, time);
+  } else {
+    console.log('Invalid color');
+    res.status(402).json(`Invalid time ${time}. Must be positive integer`);
+    return;
+  }
 
-  res.json("done");
+  res.json('done');
 });
 
 //only need this to host the static files if we're running on the pi

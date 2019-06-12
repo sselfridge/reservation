@@ -154,7 +154,7 @@ function turnOffLED(color, timeout = 0) {
 }
 
 function blinkLED(color, time = 5000) {
-    console.log(`Blink ${color} LED for ${time}`);
+  console.log(`Blink ${color} LED for ${time}`);
   let led;
   switch (color) {
     case 'red':
@@ -173,7 +173,9 @@ function blinkLED(color, time = 5000) {
   let toggled = led.readSync() ^ 1;
   led.writeSync(toggled);
   if (time > 500) {
-    setTimeout(blinkLED, 1200, color, time - 1200);
+    setTimeout(blinkLED, 500, color, time - 500);
+  } else {
+    led.writeSync(OFF);
   }
 }
 
