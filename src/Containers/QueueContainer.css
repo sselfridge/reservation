@@ -1,0 +1,79 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid gray;
+  border-radius: 20px;
+  min-height: 300px;
+  min-width: 250px;
+  max-width: 500px;
+  margin: 50px auto;
+  padding-top: 15px;
+  background-color: lightsteelblue;
+  /* opacity: 0.94; */
+}
+
+
+.container .queue-box {
+  display: flex;
+  flex-direction:column;
+  align-self: center;
+  border: 1px solid white;
+  margin: 10px;
+  min-height: 50px;
+  width: 70%;
+  min-width: 200px;
+  background-color: lightgray;
+  /* opacity: .99; */
+  border-radius: 10px;
+}
+
+.container .CurrentUser {
+  display: flex;
+  font-size: 1em;
+  justify-content: space-between;
+  opacity: 1;
+  
+}
+
+.container .CurrentUser span {
+  padding: 5px;
+}
+
+
+.queue-box .Queue {
+  display:flex;
+  align-self:stretch;
+  margin: 10px;
+  background-color: whitesmoke;
+  border: 1px solid white;
+  border-radius: 10px;
+
+}
+
+.container .fab {
+  align-self: flex-end;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  
+}
+
+.logout {
+  display:flex;
+  align-self:center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.logoutFab {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  min-width: 200px;
+  width:100%;
+}
