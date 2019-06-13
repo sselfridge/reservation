@@ -17,28 +17,6 @@ const App = () => {
   })
   
 
-  // const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  // useEffect(() => {
-  //   const interval = setTimeout(() => {
-  //     checkUser();
-  //   }, 1);
-  // })
-
-  // const checkUser = () => {
-  //   console.log("isLoggedIn", isLoggedIn)
-  //   axios.get('/is-logged-in').then(response => {
-  //     setIsLoggedIn(response.data)
-  //     console.log("part 2 isLoggedIn", isLoggedIn)
-  //   })
-  // }
-
-  // let routing;
-  // isLoggedIn === true ? 
-  //   routing = <Route path="/line" exact component={QueueContainer} /> :
-  //   routing = <Route path="/" exact component={SignupContainer} /> 
-
-
   return (
     
     <div className="App">

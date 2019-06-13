@@ -1,18 +1,10 @@
 import React from "react";
 
-const QueueItem = () => {
+const QueueItem = (props) => {
   return(
     <>
       <ul>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
-        <li>Jason Kim</li>
+        <li>{props.name}</li>      
       </ul>
     </>
   )
