@@ -10,6 +10,9 @@ const mongooseStart = require('./bin/mongoose');
 const passportSetup = require('./services/passport');
 const path = require('path');
 
+const config = require('../config/keys');
+const twilio = require('twilio')(config.twilio.accountSid, config.twilio.authToken);
+
 mongooseStart();
 
 const app = express();
@@ -61,7 +64,7 @@ const turnOffTheLights = setInterval(() => {
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  if(CURRENT_ENV !== 'production') console.log(pi.ioStatus());
+  if (CURRENT_ENV !== 'production') console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.CLOSED) {
@@ -70,6 +73,9 @@ const interval = setInterval(() => {
       roomInUse = true;
       eventObj.start = Date.now();
       console.log('Event Started');
+    } else {
+      if (Q.queue.length > 0) pi.turnOnLED('yellow');
+      else pi.turnOffLED('yellow');
     }
   } else {
     if (roomInUse === true) {
@@ -90,6 +96,27 @@ app.get('/api/', (req, res) => {
   const value = objIO.doorStatus.readSync();
   objIO.doorStatus.writeSync(value ^ 1);
   res.json('Allo!!!');
+});
+
+app.post('/sms', (req, res) => {
+  const message = req.body.message;
+  console.log(`message:${message}`);
+  twilio.messages.create(
+    {
+      to: '(805)765-1413',
+      from: config.twilio.numberx,
+      body: `Reservation:\n\n${message}`,
+    },
+    (err, message) => {
+      if(err){
+        console.log('Twilio Error');
+        console.log(err);
+        res.status(444).json("SMS error")
+      }
+      console.log(message.sid);
+    }
+  );
+  res.json('SENT!');
 });
 
 // get current door status
