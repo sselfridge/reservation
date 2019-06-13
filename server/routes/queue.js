@@ -1,4 +1,5 @@
 var express = require('express');
+const User = require('../models/user');
 var Q = express.Router();
 
 Q.queue = [];
@@ -8,18 +9,43 @@ Q.get('/', (req, res) => {
   res.json(Q.queue);
 });
 
-Q.post('/push/:user', (req, res) => {
-  console.log(Q.queue);
-  const user = req.params.user;
+Q.post('/push', (req, res) => {
+  const userId = req.user.id;
+  User.find({id: userId}, (err, data) => {
+    if (err) {
+      res.send('err');
+    } else {
+      // console.log(Q.queue);
+      // const user = req.params.user;
 
-  if (Q.queue.indexOf(user) !== -1) {
-    console.log('User Already exists in Queue');
-    res.status(444).json('User already in Queue');
-    return;
-  }
+      // if (Q.queue.indexOf(user) !== -1) {
+      //   console.log('User Already exists in Queue');
+      //   res.status(444).json('User already in Queue');
+      //   return;
+      // }
+      for (let i = 0; i < Q.queue.length; i++) {
+        if (Q.queue.id === data.id) {
+          console.log('User already exists in Queue');
+          res.status(444).json('User already in queue');
+        }
+      }
 
-  Q.queue.push(user);
-  res.json(Q.queue);
+      Q.queue.push(data);
+      res.json(Q.queue);
+    }
+  })
+
+  // console.log(Q.queue);
+  // const user = req.params.user;
+  //
+  // if (Q.queue.indexOf(user) !== -1) {
+  //   console.log('User Already exists in Queue');
+  //   res.status(444).json('User already in Queue');
+  //   return;
+  // }
+  //
+  // Q.queue.push(user);
+  // res.json(Q.queue);
 });
 
 Q.get('/pop', (req, res) => {

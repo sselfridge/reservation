@@ -10,14 +10,14 @@ router.get('/google', passport.authenticate('google', {
 }));*/
 
 router.get('/google/callback', passport.authenticate('google'), (req, res) => {
-  res.redirect('/');
+  res.redirect('/queue');
 });
 
 // auth logout
 router.get('/logout', (req, res) => {
   // handle with passport
   req.logout();
-  res.redirect('/');
+  res.redirect('/logged_out');
 });
 
 module.exports = router;

@@ -3,12 +3,22 @@ const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const authRoutes = require('./routes/authRoutes');
 const helmet = require('helmet');
+const path = require('path');
 const keys = require('../config/keys.js');
 const mongooseStart = require('./bin/mongoose');
+
+// required for passport to work properly
 const passportSetup = require('./services/passport');
-const path = require('path');
+
+const loginStatus = require('./middleware/loginStatus');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const Q = require('./routes/queue');
+const events = require('./routes/events');
+
+const config = require('../config/keys');
+const twilio = require('twilio')(config.twilio.accountSid, config.twilio.authToken);
 
 mongooseStart();
 
@@ -26,12 +36,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/auth', authRoutes);
+app.use(express.static(path.join(__dirname, '../build')));
+
 
 // app.use('/profile', profileRoutes);
-
-const Q = require('./routes/queue');
-const events = require('./routes/events');
 
 const pi = require('./piController');
 const eventController = require('./eventController');
@@ -40,6 +48,10 @@ app.use('/queue', Q);
 app.use('/events', events);
 
 app.use(express.static(path.join(__dirname, '../build')));
+app.use(userRoutes);
+app.use('/auth', authRoutes);
+app.use('/queue', loginStatus.isLoggedIn, Q);
+app.use('/events', events);
 
 let roomInUse = false;
 const eventObj = {
@@ -61,7 +73,7 @@ const turnOffTheLights = setInterval(() => {
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  if(CURRENT_ENV !== 'production') console.log(pi.ioStatus());
+  if (CURRENT_ENV !== 'production') console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.CLOSED) {
@@ -70,6 +82,9 @@ const interval = setInterval(() => {
       roomInUse = true;
       eventObj.start = Date.now();
       console.log('Event Started');
+    } else {
+      if (Q.queue.length > 0) pi.turnOnLED('yellow');
+      else pi.turnOffLED('yellow');
     }
   } else {
     if (roomInUse === true) {
@@ -85,11 +100,33 @@ const interval = setInterval(() => {
   }
 }, 1000);
 
+
 app.get('/api/', (req, res) => {
   console.log('/api');
   const value = objIO.doorStatus.readSync();
   objIO.doorStatus.writeSync(value ^ 1);
   res.json('Allo!!!');
+});
+
+app.post('/sms', (req, res) => {
+  const message = req.body.message;
+  console.log(`message:${message}`);
+  twilio.messages.create(
+    {
+      to: '(805)765-1413',
+      from: config.twilio.numberx,
+      body: `Reservation:\n\n${message}`,
+    },
+    (err, message) => {
+      if(err){
+        console.log('Twilio Error');
+        console.log(err);
+        res.status(444).json("SMS error")
+      }
+      console.log(message.sid);
+    }
+  );
+  res.json('SENT!');
 });
 
 // get current door status
@@ -200,6 +237,10 @@ if (CURRENT_ENV === 'production') {
     res.sendFile(path.join(__dirname + '/../build/index.html'));
   });
 }
+
+app.get('/api/unauthorized', (req, res) => {
+  res.send('You aren\'t authorized to access this');
+});
 
 // catch all 404 function
 app.use(function(req, res) {
