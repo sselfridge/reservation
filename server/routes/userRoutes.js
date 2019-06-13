@@ -7,7 +7,13 @@ const userController = require('../controllers/userController');
 
 });*/
 
-router.get('/user', (req, res) => {
+// router.get('/')
+
+router.get('/logged_out', (req, res) => {
+  res.send('logged out');
+});
+
+/*router.get('/user', (req, res) => {
   res.send('route reached');
 });
 
@@ -15,6 +21,6 @@ router.post('/user', (req, res) => {
   console.log('reached');
   console.log(req.body);
   userController.createUser(req, res);
-});
+});*/
 
 module.exports = router;
