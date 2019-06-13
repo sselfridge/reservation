@@ -32,10 +32,8 @@ const SignupContainer = ()  => {
   return (
     <div className="container"> 
       <h1>Welcome to Reservation Smith</h1>
-      <a className="loginButton" href="/auth/google">Login with Goog</a>
-      {/* <Link to="/auth/google"> */}
-      <input type="button" className="loginButton" onClick={auth} />
-    {/* </Link> */}
+      <a href="/auth/google">LOGIN WITH THE GOOGLES!!!!</a>
+      <input type="button" className="loginButton" />
     </div>
   );
 };

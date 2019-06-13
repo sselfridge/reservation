@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const path = require('path');
 const keys = require('../config/keys.js');
@@ -33,25 +34,25 @@ app.use(
     keys: [keys.session.cookieKey],
   })
 );
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../build')));
-
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // app.use('/profile', profileRoutes);
 
 const pi = require('./piController');
 const eventController = require('./eventController');
 
-app.use('/queue', Q);
-app.use('/events', events);
-
-app.use(express.static(path.join(__dirname, '../build')));
-app.use(userRoutes);
-app.use('/auth', authRoutes);
 app.use('/queue', loginStatus.isLoggedIn, Q);
 app.use('/events', events);
+
+app.use(userRoutes); // serves /logged_out endpoint
+app.use('/auth', authRoutes);
+// app.use('/queue', loginStatus.isLoggedIn, Q);
+// app.use('/events', events);
 
 let roomInUse = false;
 const eventObj = {
@@ -72,7 +73,7 @@ const turnOffTheLights = setInterval(() => {
 }, 300000);
 
 //check interval for changing door / LED values
-const interval = setInterval(() => {
+/*const interval = setInterval(() => {
   if (CURRENT_ENV !== 'production') console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
@@ -98,7 +99,7 @@ const interval = setInterval(() => {
       eventObj.end = null;
     }
   }
-}, 1000);
+}, 1000);*/
 
 
 app.get('/api/', (req, res) => {
