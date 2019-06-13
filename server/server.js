@@ -100,12 +100,12 @@ const interval = setInterval(() => {
 }, 1000);
 
 
-app.get('/api/', (req, res) => {
-  console.log('/api');
-  const value = objIO.doorStatus.readSync();
-  objIO.doorStatus.writeSync(value ^ 1);
-  res.json('Allo!!!');
-});
+// app.get('/api/', (req, res) => {
+//   console.log('/api');
+//   const value = objIO.doorStatus.readSync();
+//   objIO.doorStatus.writeSync(value ^ 1);
+//   res.json('Allo!!!');
+// });
 
 app.post('/sms', (req, res) => {
   const message = req.body.message;
@@ -113,7 +113,7 @@ app.post('/sms', (req, res) => {
   twilio.messages.create(
     {
       to: '(805)765-1413',
-      from: config.twilio.numberx,
+      from: config.twilio.number,
       body: `Reservation:\n\n${message}`,
     },
     (err, message) => {
