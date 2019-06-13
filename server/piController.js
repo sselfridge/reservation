@@ -34,7 +34,6 @@ piController.ioStatus = ioStatus;
 piController.blinkLED = blinkLED;
 piController.turnOffLED = turnOffLED;
 piController.turnOnLED = turnOnLED;
-//obj that will have the current status of all IO bits
 
 const CURRENT_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'dev';
 
@@ -60,6 +59,7 @@ if (CURRENT_ENV === 'production') {
   return piController.objIO;
 }
 
+let prevState;
 // returns closed (in use) or open (available) (same as objIO.OPEN objIO.CLOSED)
 // room consitered in use when it has been in the new state for > 30 seconds
 // expected to be called every 1000ms in server.js
@@ -68,11 +68,11 @@ function doorCheck() {
   let doorState = piController.objIO.doorState;
   let doorTime = piController.objIO.doorTime;
 
-    if(currentState === OPEN){
-        turnOffLED('yellow');
-    } else {
-        turnOnLED('yellow')
-    }
+    if(currentState !== prevState){
+        blinkLED('yellow',1000);
+    } 
+
+    prevState = currentState;
 
   if (currentState !== doorState && doorTime === 0) {
     // start timer
