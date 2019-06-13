@@ -149,13 +149,11 @@ app.post('/sms', (req, res) => {
     );
   }
 });
-
 // get current door status
 app.get('/door', (req, res) => {
   console.log(`/door`);
   res.json(roomInUse);
 });
-
 // change door status DEV only
 app.post('/door/:status', (req, res) => {
   console.log(`/door/:status`);
