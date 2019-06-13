@@ -3,13 +3,19 @@ const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const authRoutes = require('./routes/authRoutes');
 const helmet = require('helmet');
+const path = require('path');
 const keys = require('../config/keys.js');
 const mongooseStart = require('./bin/mongoose');
-const passportSetup = require('./services/passport');
-const path = require('path');
 
+// required for passport to work properly
+const passportSetup = require('./services/passport');
+
+const loginStatus = require('./middleware/loginStatus');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const Q = require('./routes/queue');
+const events = require('./routes/events');
 
 mongooseStart();
 
@@ -27,20 +33,16 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/auth', authRoutes);
+app.use(express.static(path.join(__dirname, '../build')));
 
-// app.use('/profile', profileRoutes);
-
-const Q = require('./routes/queue')
-const events = require('./routes/events')
 
 const pi = require('./piController');
 const eventController = require('./eventController');
 
-app.use('/queue',Q)
-app.use('/events',events)
-
-app.use(express.static(path.join(__dirname, '../build')));
+app.use(userRoutes);
+app.use('/auth', authRoutes);
+app.use('/queue', loginStatus.isLoggedIn, Q);
+app.use('/events', events);
 
 let roomInUse = false;
 const eventObj = {
@@ -85,6 +87,7 @@ const interval = setInterval(() => {
     }
   }
 }, 1000);
+
 
 app.get('/api/', (req, res) => {
   console.log('/api');
@@ -203,6 +206,10 @@ if (CURRENT_ENV === 'production') {
     res.sendFile(path.join(__dirname + '/../build/index.html'));
   });
 }
+
+app.get('/api/unauthorized', (req, res) => {
+  res.send('You aren\'t authorized to access this');
+});
 
 // catch all 404 function
 app.use(function(req, res) {
