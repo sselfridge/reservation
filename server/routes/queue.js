@@ -11,7 +11,7 @@ Q.get('/', (req, res) => {
 
 Q.post('/push', (req, res) => {
   const userId = req.user.id;
-  User.find({id: userId}, (err, data) => {
+  User.find({ id: userId }, (err, data) => {
     if (err) {
       res.send('err');
     } else {
@@ -33,19 +33,21 @@ Q.post('/push', (req, res) => {
       Q.queue.push(data);
       res.json(Q.queue);
     }
-  })
+  });
+});
 
-  // console.log(Q.queue);
-  // const user = req.params.user;
-  //
-  // if (Q.queue.indexOf(user) !== -1) {
-  //   console.log('User Already exists in Queue');
-  //   res.status(444).json('User already in Queue');
-  //   return;
-  // }
-  //
-  // Q.queue.push(user);
-  // res.json(Q.queue);
+Q.post('/push/:user', (req, res) => {
+  console.log(Q.queue);
+  const user = req.params.user;
+
+  if (Q.queue.indexOf(user) !== -1) {
+    console.log('User Already exists in Queue');
+    res.status(444).json('User already in Queue');
+    return;
+  }
+
+  Q.queue.push(user);
+  res.json(Q.queue);
 });
 
 Q.get('/pop', (req, res) => {
