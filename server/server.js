@@ -74,7 +74,7 @@ const turnOffTheLights = setInterval(() => {
 }, 300000);
 
 //check interval for changing door / LED values
-/*const interval = setInterval(() => {
+const interval = setInterval(() => {
   if (CURRENT_ENV !== 'production') console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
@@ -100,7 +100,7 @@ const turnOffTheLights = setInterval(() => {
       eventObj.end = null;
     }
   }
-}, 1000);*/
+}, 1000);
 
 // app.get('/api/', (req, res) => {
 //   console.log('/api');
@@ -140,6 +140,9 @@ app.post('/sms', (req, res) => {
               }
             );
             res.json('SENT!');
+            return;
+          }else{
+            res.status(445).send("No Phone for user")
           }
         }
       }
