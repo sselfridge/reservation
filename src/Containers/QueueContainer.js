@@ -12,6 +12,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const addToQueue = () =>{
+  const phone = document.getElementById('phone').value;
+  document.getElementById('phone').value = '';
+  console.log(phone);
+  fetch('/queue/push',{
+    method: 'POST',
+    body: JSON.stringify({phone:phone})
+  }).then(response =>{
+    console.log(response);
+  })
+}
+
+
 const QueueContainer = () => {
   const classes = useStyles();
   return(
@@ -23,9 +36,10 @@ const QueueContainer = () => {
         </div>
         <div className="logoutFab">
         <button className="logout" type="button">Logout</button>
+        <input id="phone" type="text"></input>
         <div className="fab">
         <Fab color="secondary" aria-label="Add" title="Add Yourself to the Queue" className={classes.fab}>
-          <AddIcon />
+          <AddIcon onClick={addToQueue}/>
         </Fab>
         </div>
 

@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const path = require('path');
 const keys = require('../config/keys.js');
 const mongooseStart = require('./bin/mongoose');
+const Session = require('./models/user');
 
 // required for passport to work properly
 const passportSetup = require('./services/passport');
@@ -101,7 +102,6 @@ const turnOffTheLights = setInterval(() => {
   }
 }, 1000);*/
 
-
 // app.get('/api/', (req, res) => {
 //   console.log('/api');
 //   const value = objIO.doorStatus.readSync();
@@ -112,22 +112,39 @@ const turnOffTheLights = setInterval(() => {
 app.post('/sms', (req, res) => {
   const message = req.body.message;
   console.log(`message:${message}`);
-  twilio.messages.create(
-    {
-      to: '(805)765-1413',
-      from: config.twilio.number,
-      body: `Reservation:\n\n${message}`,
-    },
-    (err, message) => {
-      if(err){
-        console.log('Twilio Error');
-        console.log(err);
-        res.status(444).json("SMS error")
+  if ('userId' in req.cookies) {
+    const phone = 'phone' in req.body ? req.body.phone : '';
+    const userId = req.cookies.userId;
+    Session.findOne(
+      { _id: userId },
+
+      (err, userDataArr) => {
+        if (err) {
+          res.send('err');
+        } else {
+          const user = userDataArr;
+          if (user.phone) {
+            twilio.messages.create(
+              {
+                to: user.phone,
+                from: config.twilio.number,
+                body: `Reservation:\n\n${message}`,
+              },
+              (err, message) => {
+                if (err) {
+                  console.log('Twilio Error');
+                  console.log(err);
+                  res.status(444).json('SMS error');
+                }
+                console.log(message.sid);
+              }
+            );
+            res.json('SENT!');
+          }
+        }
       }
-      console.log(message.sid);
-    }
-  );
-  res.json('SENT!');
+    );
+  }
 });
 
 // get current door status
@@ -240,7 +257,7 @@ if (CURRENT_ENV === 'production') {
 }
 
 app.get('/api/unauthorized', (req, res) => {
-  res.send('You aren\'t authorized to access this');
+  res.send("You aren't authorized to access this");
 });
 
 // catch all 404 function
