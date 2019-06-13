@@ -8,13 +8,13 @@ import QueueContainer from "./Containers/QueueContainer";
 
 const App = () => {
 
-  //test a request to the server
-  // fetch(`/api/`, {
-  //   accept: "application/json"
-  // })
-  //   .then(checkStatus => { })
-  //   .then(parseJSON => { console.log(`Json: ${parseJSON}`);});
 
+  // test a request to the server
+  fetch(`/queue/`).then(function(response) {
+    if(response.status === 200) console.log("Logged in");
+    else console.log("Not Logged");
+  })
+  
 
   return (
     <div className="App">
