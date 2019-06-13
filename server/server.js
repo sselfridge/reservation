@@ -16,7 +16,6 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const Q = require('./routes/queue');
 const events = require('./routes/events');
-const path = require('path');
 
 const config = require('../config/keys');
 const twilio = require('twilio')(config.twilio.accountSid, config.twilio.authToken);
@@ -41,9 +40,6 @@ app.use(express.static(path.join(__dirname, '../build')));
 
 
 // app.use('/profile', profileRoutes);
-
-const Q = require('./routes/queue');
-const events = require('./routes/events');
 
 const pi = require('./piController');
 const eventController = require('./eventController');
