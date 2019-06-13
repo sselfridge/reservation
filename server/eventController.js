@@ -1,18 +1,10 @@
 const Event = require('./models/event');
-// const mongoose = require('mongoose');
-// const DB = require('./DB_CONFIG');
 
-// const mongoURI = DB.mongoURI;
-// mongoose.connect(mongoURI, { useNewUrlParser: true }, err => {
-//   if (err) {
-//     console.log(`Database Error`);
-//     console.log(err);
-//   } else {
-//     console.log('DBD Connected');
-//   }
-// });
+const eventController = {
+  average: '00:00',
+};
 
-const eventController = {};
+// controller helper functions
 
 eventController.createEvent = function(eventObj) {
   const start = eventObj.start;
@@ -23,17 +15,38 @@ eventController.createEvent = function(eventObj) {
   console.log(`Event Created`);
 };
 
-eventController.getAllEvents = (req, res, next) => {
+eventController.getAverageDuration = events => {
+  let total = 0;
+  events.forEach(element => {
+    total += element.duration;
+  });
+  const avgMilli = total / events.length;
+  const avg = (avgMilli / 60000).toFixed(2);
+  const seconds = ('0' + Math.floor((avg % 1) * 60)).slice(-2);
+  const minutes = Math.floor(avg);
+  return `${minutes}:${seconds}`;
+};
+
+//Middleware
+eventController.getAllEvents = async (req, res, next) => {
   console.log('Get All Events');
   Event.find({}, (err, events) => {
-    console.log(`Event Count:${events.length}`);
     if (err) {
+      console.log('Error getting Events');
       res.locals.err = err;
       next();
     }
+
+    eventController.average = eventController.getAverageDuration(events);
     res.locals.data = events;
     next();
   });
+};
+
+eventController.getAverage = (req, res, next) => {
+  if (res.locals.err) next();
+  res.locals.average = eventController.average; //this is commuted when getAllEvents is called
+  next();
 };
 
 module.exports = eventController;

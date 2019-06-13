@@ -10,17 +10,16 @@ const mongooseStart = require('./bin/mongoose');
 const passportSetup = require('./services/passport');
 const path = require('path');
 
-
 mongooseStart();
 
 const app = express();
 // app.use(helmet());
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
   cookieSession({
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 86400000, // 1 day
     keys: [keys.session.cookieKey],
   })
 );
@@ -31,14 +30,14 @@ app.use('/auth', authRoutes);
 
 // app.use('/profile', profileRoutes);
 
-const Q = require('./routes/queue')
-const events = require('./routes/events')
+const Q = require('./routes/queue');
+const events = require('./routes/events');
 
 const pi = require('./piController');
 const eventController = require('./eventController');
 
-app.use('/queue',Q)
-app.use('/events',events)
+app.use('/queue', Q);
+app.use('/events', events);
 
 app.use(express.static(path.join(__dirname, '../build')));
 
@@ -62,7 +61,7 @@ const turnOffTheLights = setInterval(() => {
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  // console.log(pi.ioStatus());
+  if(CURRENT_ENV !== 'production') console.log(pi.ioStatus());
 
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.CLOSED) {
@@ -117,7 +116,6 @@ app.post('/door/:status', (req, res) => {
 });
 
 app.get('/led/:color', (req, res) => {
-
   console.log(`/led/:color`);
   const color = req.params.color;
   console.log(`Color:${color}`);
@@ -193,7 +191,6 @@ app.post('/led/blink/:color/:time', (req, res) => {
   res.json('done');
 });
 
-
 //only need this to host the static files if we're running on the pi
 if (CURRENT_ENV === 'production') {
   app.get('/', function(req, res) {
@@ -209,9 +206,11 @@ app.use(function(req, res) {
   res.status(404).json('Something broke! Check url and try again?');
 });
 
-//other catch all, might be better error reporting
-app.use(({ code, error }, req, res, next) => {
-  res.status(code).json({ error });
+// other catch all, might be better error reporting
+app.use(({ errCode, error }, req, res, next) => {
+  console.log('Error Code:');
+  console.log(errCode);
+  res.status(errCode).json({ error });
 });
 
 const port = CURRENT_ENV === 'production' ? 5000 : 3001;
