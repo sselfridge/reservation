@@ -103,4 +103,7 @@
   .desktop-content {
     display: none;
   }
-}
+}  
+#phone {
+  height: 40px;
+} 

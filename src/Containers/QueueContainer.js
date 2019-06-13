@@ -13,6 +13,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const addToQueue = () =>{
+  const phone = document.getElementById('phone').value;
+  document.getElementById('phone').value = '';
+  console.log(phone);
+  fetch('/queue/push',{
+    method: 'POST',
+    body: JSON.stringify({phone:phone})
+  }).then(response =>{
+    console.log(response);
+  })
+}
+
+
 const QueueContainer = () => {
   const classes = useStyles();
   return(

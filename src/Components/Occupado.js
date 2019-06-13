@@ -6,14 +6,15 @@ const Occupado = () => {
   const [checkDoor, setCheckDoor] = useState(true);
 
   useEffect(() => {
+    // console.log("checking room status", checkDoor)
     const interval = setInterval(() => {
       check();
-    }, 1000);
+    }, 2000);
   })
 
   const check = () => {
     axios.get('/door').then(response => {
-      console.log(response.data);
+      console.log("RESPONSE.DATA", response.data);
       setCheckDoor(response.data)
     })
   }
