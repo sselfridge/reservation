@@ -9,6 +9,14 @@ const userController = require('../controllers/userController');
 
 // router.get('/')
 
+router.get('/is-logged-in', (req, res) => {
+  if (req.user) {
+    res.send('true');
+  } else {
+    res.send('false');
+  }
+});
+
 router.get('/logged_out', (req, res) => {
   res.send('logged out');
 });

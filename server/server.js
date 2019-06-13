@@ -50,7 +50,7 @@ const eventController = require('./eventController');
 app.use('/queue', loginStatus.isLoggedIn, Q);
 app.use('/events', events);
 
-app.use(userRoutes); // serves /logged_out endpoint
+app.use(userRoutes); // serves /logged_out and is_logged_in endpoints
 app.use('/auth', authRoutes);
 // app.use('/queue', loginStatus.isLoggedIn, Q);
 // app.use('/events', events);

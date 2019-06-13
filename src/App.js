@@ -15,7 +15,6 @@ const App = () => {
   //   .then(checkStatus => { })
   //   .then(parseJSON => { console.log(`Json: ${parseJSON}`);});
 
-
   return (
     <div className="App">
       <Router>
