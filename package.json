@@ -7,6 +7,7 @@
     "@material-ui/core": "^4.1.0",
     "@material-ui/icons": "^4.1.0",
     "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
     "cookie-session": "^1.3.3",
     "express": "^4.17.1",
     "helmet": "^3.18.0",
@@ -38,7 +39,7 @@
     "servertest": "jest __tests__",
     "reacttest": "react-scripts test --watchAll=false",
     "testwatch": "react-scripts test",
-    "eject": "react-scripts eject"  
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

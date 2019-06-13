@@ -1,5 +1,5 @@
 var express = require('express');
-const User = require('../models/user');
+const Session = require('../models/user');
 var Q = express.Router();
 
 Q.queue = [];
@@ -10,30 +10,37 @@ Q.get('/', (req, res) => {
 });
 
 Q.post('/push', (req, res) => {
-  const userId = req.user.id;
-  User.find({id: userId}, (err, data) => {
-    if (err) {
-      res.send('err');
-    } else {
-      // console.log(Q.queue);
-      // const user = req.params.user;
+  if ('userId' in req.cookies) {
+    const phone = ('phone' in req.body) ? req.body.phone : '';
+    const userId = req.cookies.userId;
+    Session.findOneAndUpdate({_id: userId}, {$set: {phone}}, {new: true}, (err, userDataArr) => {
+      if (err) {
+        res.send('err');
+      } else {
+        console.log(Q.queue);
+        const user = userDataArr[0];
 
-      // if (Q.queue.indexOf(user) !== -1) {
-      //   console.log('User Already exists in Queue');
-      //   res.status(444).json('User already in Queue');
-      //   return;
-      // }
-      for (let i = 0; i < Q.queue.length; i++) {
-        if (Q.queue.id === data.id) {
-          console.log('User already exists in Queue');
-          res.status(444).json('User already in queue');
+        // if (Q.queue.indexOf(user) !== -1) {
+        //   console.log('User Already exists in Queue');
+        //   res.status(444).json('User already in Queue');
+        //   return;
+        // }
+        for (let i = 0; i < Q.queue.length; i++) {
+          if (Q.queue[i].id === user.id) {
+            console.log('User already exists in Queue');
+            res.status(444).json('User already in queue');
+          }
         }
-      }
 
-      Q.queue.push(data);
-      res.json(Q.queue);
-    }
-  })
+        Q.queue.push({
+          id: user.id,
+          username: user.username
+        });
+        res.json(Q.queue);
+      }
+    });
+  }
+
 
   // console.log(Q.queue);
   // const user = req.params.user;
@@ -49,16 +56,20 @@ Q.post('/push', (req, res) => {
 });
 
 Q.get('/pop', (req, res) => {
-  console.log(Q.queue);
-  if (Q.queue.length === 0) {
-    res.status(414).json('Queue Empty');
-    return;
+  if ('userId' in req.cookies) {
+    const userId = req.cookies.userId;
+
+    console.log(Q.queue);
+    if (Q.queue.length === 0) {
+      res.status(414).json('Queue Empty');
+      return;
+    }
+    const data = {
+      user: Q.queue.shift(),
+      queue: Q.queue,
+    };
+    res.json(data);
   }
-  const data = {
-    user: Q.queue.shift(),
-    queue: Q.queue,
-  };
-  res.json(data);
 });
 
 Q.post('/remove/:user', (req, res) => {
