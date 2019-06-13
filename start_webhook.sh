@@ -2,7 +2,7 @@
 #!/bin/bash
 
 function localtunnel {
-lt -s farstudystrategiccompose --port 5000
+lt -s farstudystrategiccompose --port 3001
 }
 
 until localtunnel; do
