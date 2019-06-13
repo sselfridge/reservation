@@ -128,13 +128,11 @@ app.post('/sms', (req, res) => {
   );
   res.json('SENT!');
 });
-
 // get current door status
 app.get('/door', (req, res) => {
   console.log(`/door`);
-  res.json(objIO.doorStatus.readSync());
+  res.json(roomInUse);
 });
-
 // change door status DEV only
 app.post('/door/:status', (req, res) => {
   console.log(`/door/:status`);

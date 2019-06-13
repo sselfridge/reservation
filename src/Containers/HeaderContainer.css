@@ -55,3 +55,18 @@ h1.inline {
     display: none;
   }
 }
+
+.fa-check-circle:before {
+  /* background-color:green; */
+  color: green;
+  background-color:white;
+  border-radius: 50%;
+}
+.fa-times-circle:before {
+  color: red;
+  background-color:white;
+  border-radius:50%;
+  /* border: 2px solid red; */
+
+}
+
