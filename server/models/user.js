@@ -10,6 +10,7 @@ const sessionSchema = new Schema({
   // createdAt: { type: Date, expires: 30, default: Date.now }
   username: String,
   googleId: String,
+  phone: String,
 });
 
 module.exports = mongoose.model('Session', sessionSchema);

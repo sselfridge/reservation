@@ -10,6 +10,7 @@ Q.get('/', (req, res) => {
 });
 
 Q.post('/push', (req, res) => {
+  console.log('Q - push');
   if ('userId' in req.cookies) {
     const phone = ('phone' in req.body) ? req.body.phone : '';
     const userId = req.cookies.userId;
@@ -17,8 +18,9 @@ Q.post('/push', (req, res) => {
       if (err) {
         res.send('err');
       } else {
-        console.log(Q.queue);
-        const user = userDataArr[0];
+        console.log("Phone");
+        console.log(phone);
+        const user = userDataArr;
 
         // if (Q.queue.indexOf(user) !== -1) {
         //   console.log('User Already exists in Queue');
@@ -29,6 +31,7 @@ Q.post('/push', (req, res) => {
           if (Q.queue[i].id === user.id) {
             console.log('User already exists in Queue');
             res.status(444).json('User already in queue');
+            return;
           }
         }
 
@@ -37,22 +40,10 @@ Q.post('/push', (req, res) => {
           username: user.username
         });
         res.json(Q.queue);
+        return;
       }
     });
   }
-
-
-  // console.log(Q.queue);
-  // const user = req.params.user;
-  //
-  // if (Q.queue.indexOf(user) !== -1) {
-  //   console.log('User Already exists in Queue');
-  //   res.status(444).json('User already in Queue');
-  //   return;
-  // }
-  //
-  // Q.queue.push(user);
-  // res.json(Q.queue);
 });
 
 Q.get('/pop', (req, res) => {
