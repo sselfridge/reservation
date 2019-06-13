@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import Occupado from '../Components/Occupado';
 import './HeaderContainer.css';
 
-const axios = require('axios');
+// const axios = require('axios');
 
 
 const HeaderContainer = () => {
   const[occupado, setOccupado] = useState(true)
+
+
 
     let description;
     if (occupado === true) {
@@ -14,9 +17,6 @@ const HeaderContainer = () => {
       description = <div><i className="fas fa-check-circle"></i> <span> Open!</span> </div>
     }
   
-    // useEffect(async() => {
-    //   const result = await axios("/door")
-    // })
 
   return (
     <div className="fluid-container gray">
@@ -24,8 +24,7 @@ const HeaderContainer = () => {
         <div className="inner-flex-desktop">
           <h1>ReservationSmith</h1>
           <div className="occupied-indicator">
-            {/* <i className="fa fa-times-circle"></i><span> Occupado!</span> */}
-            {description}
+            <Occupado />
           </div>
         </div>
         <div className="inner-flex-mobile">
