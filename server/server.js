@@ -37,7 +37,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, '../build')));
-
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // app.use('/profile', profileRoutes);
 
@@ -47,11 +47,10 @@ const eventController = require('./eventController');
 app.use('/queue', Q);
 app.use('/events', events);
 
-app.use(express.static(path.join(__dirname, '../build')));
 app.use(userRoutes);
 app.use('/auth', authRoutes);
-app.use('/queue', loginStatus.isLoggedIn, Q);
-app.use('/events', events);
+// app.use('/queue', loginStatus.isLoggedIn, Q);
+// app.use('/events', events);
 
 let roomInUse = false;
 const eventObj = {
@@ -132,7 +131,7 @@ app.post('/sms', (req, res) => {
 // get current door status
 app.get('/door', (req, res) => {
   console.log(`/door`);
-  res.json(objIO.doorStatus.readSync());
+  res.json(roomInUse);
 });
 
 // change door status DEV only
