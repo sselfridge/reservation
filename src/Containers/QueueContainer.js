@@ -43,7 +43,7 @@ const QueueContainer = () => {
     <div className="content">
       <div className="desktop-content">
         <div className="container">
-        <a href="/auth/google">Login with Google to Join Queue</a>
+        <a className="loginButton" href="/auth/google"></a>
 
           FISH BOWL QUEUE
           <div className="queue-box">
@@ -68,7 +68,7 @@ const QueueContainer = () => {
           </div>
         </div>
         <div className="container">
-          Fishbowl Event
+        Fishbowl Events. Average length: 8:06
           <div className="queue-box">
             <Events />
           </div>
