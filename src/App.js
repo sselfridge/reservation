@@ -8,12 +8,18 @@ import QueueContainer from './Containers/QueueContainer';
 const axios = require('axios');
 
 const App = () => {
+  // test a request to the server
+  fetch(`/queue/`).then(function(response) {
+    if (response.status === 200) console.log('Logged in');
+    else console.log('Not Logged');
+  });
+
   return (
     <div className="App">
       <Router>
         <HeaderContainer />
         <div className="content">
-        <QueueContainer />
+          <QueueContainer />
         </div>
       </Router>
     </div>

@@ -14,7 +14,7 @@ const Occupado = () => {
 
   const check = () => {
     axios.get('/door').then(response => {
-      console.log("RESPONSE.DATA", response.data);
+      // console.log("RESPONSE.DATA", response.data);
       setCheckDoor(response.data)
     })
   }
