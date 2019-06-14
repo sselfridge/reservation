@@ -2,8 +2,6 @@ import React from 'react';
 import QueueItem from './QueueItem';
 
 const Queue = props => {
-  console.log('q props');
-  console.log(typeof props.queue);
 
   const itemQ = [];
   if (typeof props.queue !== "boolean" && props.queue) {

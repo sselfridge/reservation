@@ -20,7 +20,6 @@ const QueueContainer = () => {
   const addToQueue = () => {
     const phone = document.getElementById('phone').value;
     document.getElementById('phone').value = '';
-    console.log(phone);
     fetch('/queue/push', {
       method: 'POST',
       body: JSON.stringify({ phone: phone }),
@@ -30,7 +29,6 @@ const QueueContainer = () => {
       })
       .then(function(myJson) {
         const newQueue = [];
-        console.log(myJson);
         myJson.forEach(user => {
           newQueue.push(user.username);
         });
@@ -43,6 +41,8 @@ const QueueContainer = () => {
     <div className="content">
       <div className="desktop-content">
         <div className="container">
+        <a href="/auth/google">Login with Google to Join Queue</a>
+
           FISH BOWL QUEUE
           <div className="queue-box">
             <CurrentUser />

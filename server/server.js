@@ -88,16 +88,22 @@ const interval = setInterval(() => {
       if (Q.queue.length > 0) pi.turnOnLED('yellow');
       else pi.turnOffLED('yellow');
     }
-  } else {
+  } else { //door open
     if (roomInUse === true) {
       pi.turnOnLED('green', 1000);
       roomInUse = false;
       eventObj.end = Date.now();
       console.log('Event End');
       if (eventObj.start) eventController.createEvent(eventObj);
-
+      Q.queue.shift();
       eventObj.start = null;
       eventObj.end = null;
+    } else {
+      if (Q.queue.length > 0) {
+        pi.turnOnLED('red');
+      } else {
+        pi.turnOffLED('red');
+      }
     }
   }
 }, 1000);
@@ -141,8 +147,8 @@ app.post('/sms', (req, res) => {
             );
             res.json('SENT!');
             return;
-          }else{
-            res.status(445).send("No Phone for user")
+          } else {
+            res.status(445).send('No Phone for user');
           }
         }
       }
@@ -151,7 +157,7 @@ app.post('/sms', (req, res) => {
 });
 // get current door status
 app.get('/door', (req, res) => {
-  console.log(`/door`);
+  // console.log(`/door`);
   res.json(roomInUse);
 });
 // change door status DEV only

@@ -107,3 +107,8 @@
 #phone {
   height: 40px;
 } 
+
+#eventsList{
+  max-height: 300px;
+  overflow-y: auto;
+}
