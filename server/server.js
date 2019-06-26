@@ -75,7 +75,9 @@ const turnOffTheLights = setInterval(() => {
 
 //check interval for changing door / LED values
 const interval = setInterval(() => {
-  if (CURRENT_ENV !== 'production') console.log(pi.ioStatus());
+  // if (CURRENT_ENV !== 'production') console.log(pi.ioStatus());
+  const now = new Date();
+  console.log(`Server was running at: ${now.getDate()} - ${now.getHours()}:${now.getMinutes()}`);
 
   const doorStatus = pi.doorCheck();
   if (doorStatus === objIO.CLOSED) {
@@ -106,7 +108,7 @@ const interval = setInterval(() => {
       }
     }
   }
-}, 1000);
+}, 300000);
 
 // app.get('/api/', (req, res) => {
 //   console.log('/api');
